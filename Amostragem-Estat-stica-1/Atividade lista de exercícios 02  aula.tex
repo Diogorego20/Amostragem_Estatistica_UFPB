@@ -1,0 +1,1189 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{graphicx}
+
+\geometry{a4paper, margin=2.5cm}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{r-style}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=8pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    language=R
+}
+
+\lstdefinestyle{python-style}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=8pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    language=Python
+}
+
+\title{Análise de Amostragem Estatística \\ \large Implementações em R e Python}
+\author{Diogo Rego}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento apresenta implementações de análise de amostragem estatística, incorporando boas práticas de programação. Desenvolvido como material didático, aborda conceitos fundamentais de inferência estatística através de exemplos práticos em R e Python, com foco em validação, tratamento de erros e eficiência computacional.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introdução à Amostragem Estatística}
+\label{sec:introducao}
+
+A amostragem estatística é um pilar fundamental da inferência estatística, permitindo que conclusões sobre uma população sejam obtidas a partir do estudo de um subconjunto representativo. Este material aborda os seguintes conceitos teóricos:
+
+\subsection{Conceitos Fundamentais}
+\begin{itemize}
+\item \textbf{População}: Conjunto completo de elementos sob estudo
+\item \textbf{Amostra}: Subconjunto representativo da população
+\item \textbf{Parâmetro}: Medida descritiva da população
+\item \textbf{Estatística}: Medida descritiva da amostra
+\item \textbf{Distribuição Amostral}: Distribuição de uma estatística sobre todas as amostras possíveis
+\end{itemize}
+
+\subsection{Contexto do Exercício}
+O exercício proposto considera uma população finita \( U = \{1,2,3,4,5,6,7,8\} \) com variável de interesse \( Y = \{1,2,4,4,7,7,7,8\} \). O objetivo é analisar todas as amostras possíveis de tamanho \( n = 4 \) e estudar o comportamento das estatísticas amostrais.
+
+A tabela abaixo resume a evolução das implementações, destacando as melhorias nas boas práticas de programação:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Boa Prática} & \textbf{Versão Original} & \textbf{Versão Corrigida} & \textbf{Status} \\
+\midrule
+Validação de Entrada & ❌ & ✅ & Implementado \\
+Tratamento de Erros & ❌ & ✅ & Implementado \\
+Eficiência Computacional & ⚠️ & ✅ & Otimizado \\
+Modularização & ❌ & ✅ & Modularizado \\
+Documentação & ✅ & ✅ & Mantido \\
+Nomenclatura & ✅ & ✅ & Mantido \\
+\bottomrule
+\end{tabular}
+\caption{Evolução das boas práticas implementadas}
+\end{table}
+
+\section{Fundamentos Teóricos da Amostragem}
+\label{sec:fundamentos-teoricos}
+
+\subsection{Combinações Possíveis}
+Para uma população de tamanho \( N \) e amostras de tamanho \( n \), o número total de combinações possíveis sem reposição é dado por:
+
+\[
+\text{Combinações} = \binom{N}{n} = \frac{N!}{n!(N-n)!}
+\]
+
+No exercício em questão:
+\[
+\binom{8}{4} = \frac{8!}{4!4!} = 70 \text{ combinações possíveis}
+\]
+
+\subsection{Estatísticas de Interesse}
+Para cada amostra, calculamos:
+\begin{itemize}
+\item \textbf{Média amostral}: \( \bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} \)
+\item \textbf{Proporção}: \( p = \frac{\text{número de elementos > limite}}{n} \)
+\item \textbf{Variância amostral}: \( s^2 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n-1} \)
+\end{itemize}
+
+\subsection{Importância da Validação}
+A validação de entradas é crucial em aplicações estatísticas para garantir:
+\begin{itemize}
+\item Consistência dos parâmetros (\( n \leq N \))
+\item Integridade dos dados (ausência de NA/NaN)
+\item Viabilidade computacional
+\end{itemize}
+
+\section{Implementação R Completa}
+\label{sec:r-completa}
+
+\subsection{Abordagem Didática}
+A implementação em R segue uma estrutura modular que facilita o entendimento dos conceitos de amostragem. Cada função corresponde a uma etapa do processo inferencial.
+
+\begin{lstlisting}[style=r-style, caption={Implementação R para análise de amostragem}]
+#' =============================================================================
+#' ANÁLISE DE AMOSTRAGEM ESTATÍSTICA - MATERIAL DIDÁTICO
+#' 
+#' Objetivos de aprendizagem:
+#' 1. Compreender distribuições amostrais
+#' 2. Implementar validação estatística
+#' 3. Desenvolver algoritmos eficientes para amostragem
+#' =============================================================================
+
+# PACOTES NECESSÁRIOS ----------------------------------------------------------
+if (!require(combinat)) install.packages("combinat")
+library(combinat)
+
+# VALIDAÇÃO DE ENTRADAS --------------------------------------------------------
+
+#' @title Validar parâmetros de entrada
+#' @description Implementa verificações fundamentais para análise estatística
+#' @param valores Vetor numérico com valores da população
+#' @param n Tamanho da amostra (deve ser <= length(valores))
+#' @param limite Valor limite para cálculo de proporções
+#' @return Lista com status e mensagens de erro
+validar_entradas <- function(valores, n, limite) {
+  erros <- character()
+  avisos <- character()
+  
+  # Validações críticas baseadas em teoria de amostragem
+  if (!is.numeric(valores)) {
+    erros <- c(erros, "Valores da população devem ser numéricos")
+  }
+  
+  if (any(is.na(valores))) {
+    erros <- c(erros, "Valores da população não podem conter NA")
+  }
+  
+  if (!is.numeric(n) || n < 1) {
+    erros <- c(erros, "Tamanho da amostra deve ser número positivo")
+  }
+  
+  # Verificação fundamental: n não pode ser maior que N
+  if (n > length(valores)) {
+    erros <- c(erros, sprintf(
+      "Tamanho da amostra (n=%d) maior que população (N=%d)", 
+      n, length(valores)
+    ))
+  }
+  
+  # Validações de alerta para boas práticas estatísticas
+  if (length(valores) < 5) {
+    avisos <- c(avisos, "População muito pequena para inferência")
+  }
+  
+  if (n < 30) {
+    avisos <- c(avisos, "Amostra pequena - cuidado com estimativas")
+  }
+  
+  return(list(
+    sucesso = length(erros) == 0,
+    erros = erros,
+    avisos = avisos
+  ))
+}
+
+# GERADOR DE AMOSTRAS INTELIGENTE ----------------------------------------------
+
+#' @title Gerar amostras de forma eficiente
+#' @description Demonstra diferentes estratégias de amostragem baseadas no contexto
+#' @param valores Vetor com valores da população
+#' @param n Tamanho da amostra
+#' @param max_combinacoes Número máximo de combinações para cálculo exaustivo
+#' @return Lista contendo amostras e metadados
+gerar_amostras_inteligente <- function(valores, n, max_combinacoes = 10000) {
+  total_combinacoes <- choose(length(valores), n)
+  
+  cat(sprintf("Combinações possíveis: %d\n", total_combinacoes))
+  
+  if (total_combinacoes <= max_combinacoes && total_combinacoes > 0) {
+    # Estratégia exaustiva para combinações viáveis
+    cat("Usando método: EXAUSTIVO (todas combinações)\n")
+    amostras <- combinat::combn(valores, n)
+    metodo <- "exaustivo"
+    amostras_geradas <- total_combinacoes
+  } else {
+    # Estratégia de amostragem para muitas combinações (abordagem prática)
+    amostras_geradas <- min(max_combinacoes, 5000)
+    cat(sprintf("Usando método: AMOSTRAGEM (%d amostras)\n", amostras_geradas))
+    
+    amostras <- replicate(
+      amostras_geradas, 
+      sample(valores, n, replace = FALSE), 
+      simplify = FALSE
+    )
+    amostras <- do.call(cbind, amostras)
+    metodo <- "amostragem"
+  }
+  
+  return(list(
+    amostras = amostras,
+    metodo = metodo,
+    total_combinacoes = total_combinacoes,
+    amostras_geradas = ncol(amostras)
+  ))
+}
+
+# CÁLCULO DE ESTATÍSTICAS ------------------------------------------------------
+
+#' @title Calcular estatísticas descritivas
+#' @description Calcula medidas de tendência central e dispersão para amostras
+#' @param amostras Matrix onde cada coluna é uma amostra
+#' @param limite Valor limite para cálculo de proporção
+#' @return Dataframe com estatísticas calculadas
+calcular_estatisticas <- function(amostras, limite = 4) {
+  tryCatch({
+    # Medidas de tendência central
+    medias <- apply(amostras, 2, mean)
+    proporcoes <- apply(amostras, 2, function(x) mean(x > limite))
+    
+    # Medidas de dispersão
+    desvios_padrao <- apply(amostras, 2, sd)
+    
+    data.frame(
+      media = medias,
+      proporcao = proporcoes,
+      desvio_padrao = desvios_padrao
+    )
+  }, error = function(e) {
+    stop("Erro no cálculo de estatísticas: ", e$message)
+  })
+}
+
+# ANÁLISE EXPLORATÓRIA ---------------------------------------------------------
+
+#' @title Gerar análise exploratória das estatísticas
+#' @description Produz sumários descritivos para compreensão das distribuições
+#' @param estatisticas Dataframe com estatísticas das amostras
+gerar_analise_exploratoria <- function(estatisticas) {
+  cat("\n=== ANÁLISE EXPLORATÓRIA DAS ESTATÍSTICAS ===\n")
+  
+  cat("\nESTATÍSTICAS DAS MÉDIAS:\n")
+  cat(sprintf("Média das médias amostrais: %.3f\n", mean(estatisticas$media)))
+  cat(sprintf("Variância das médias: %.3f\n", var(estatisticas$media)))
+  cat(sprintf("Desvio padrão das médias: %.3f\n", sd(estatisticas$media)))
+  
+  cat("\nESTATÍSTICAS DAS PROPORÇÕES:\n")
+  cat(sprintf("Média das proporções: %.3f\n", mean(estatisticas$proporcao)))
+  cat(sprintf("Variância das proporções: %.3f\n", var(estatisticas$proporcao)))
+  
+  # Teorema do Limite Central - verificação prática
+  cat("\nVERIFICAÇÃO DO TEOREMA DO LIMITE CENTRAL:\n")
+  cat(sprintf("Erro padrão da média: %.3f\n", sd(estatisticas$media)))
+}
+
+# FUNÇÃO PRINCIPAL ORQUESTRADORA -----------------------------------------------
+
+#' @title Executar análise completa de amostragem
+#' @description Integra todas as etapas do processo de inferência estatística
+#' @param valores Vetor com valores da população
+#' @param n Tamanho da amostra
+#' @param limite Valor limite para proporções (default=4)
+#' @param max_combinacoes Limite para cálculo exaustivo (default=10000)
+#' @return Lista completa com resultados e metadados
+executar_analise_completa <- function(valores, n, limite = 4, max_combinacoes = 10000) {
+  cat("=== INÍCIO DA ANÁLISE DE AMOSTRAGEM ===\n")
+  
+  resultado_final <- list(sucesso = FALSE)
+  
+  tryCatch({
+    # 1. VALIDAÇÃO (Etapa fundamental)
+    cat("1. Validando entradas...\n")
+    validacao <- validar_entradas(valores, n, limite)
+    
+    if (!validacao$sucesso) {
+      stop(paste(validacao$erros, collapse = "; "))
+    }
+    
+    # Exibir avisos para conscientização estatística
+    if (length(validacao$avisos) > 0) {
+      cat("AVISOS ESTATÍSTICOS:\n")
+      for (aviso in validacao$avisos) {
+        cat(sprintf("  - %s\n", aviso))
+      }
+    }
+    
+    # 2. GERAÇÃO DE AMOSTRAS
+    cat("2. Gerando amostras...\n")
+    resultado_amostras <- gerar_amostras_inteligente(valores, n, max_combinacoes)
+    
+    # 3. CÁLCULO DE ESTATÍSTICAS
+    cat("3. Calculando estatísticas...\n")
+    estatisticas <- calcular_estatisticas(resultado_amostras$amostras, limite)
+    
+    # 4. ANÁLISE EXPLORATÓRIA
+    cat("4. Realizando análise exploratória...\n")
+    gerar_analise_exploratoria(estatisticas)
+    
+    # 5. MONTAGEM DO DATAFRAME FINAL
+    cat("5. Consolidando resultados...\n")
+    dados_amostras <- as.data.frame(t(resultado_amostras$amostras))
+    colnames(dados_amostras) <- paste0("V", 1:ncol(resultado_amostras$amostras))
+    
+    resultado_final <- cbind(dados_amostras, estatisticas)
+    
+    # 6. METADADOS PARA DOCUMENTAÇÃO
+    metadados <- list(
+      metodo = resultado_amostras$metodo,
+      total_combinacoes = resultado_amostras$total_combinacoes,
+      amostras_geradas = resultado_amostras$amostras_geradas,
+      populacao = valores,
+      parametros = list(n = n, limite = limite),
+      timestamp = Sys.time()
+    )
+    
+    cat("=== ANÁLISE CONCLUÍDA COM SUCESSO ===\n")
+    
+    return(list(
+      sucesso = TRUE,
+      dados = resultado_final,
+      metadados = metadados,
+      validacao = validacao
+    ))
+    
+  }, error = function(e) {
+    cat(sprintf("=== ERRO NA ANÁLISE: %s ===\n", e$message))
+    
+    return(list(
+      sucesso = FALSE,
+      erro = e$message,
+      timestamp = Sys.time()
+    ))
+  })
+}
+
+# EXECUÇÃO DIDÁTICA ------------------------------------------------------------
+
+# Dados do exercício proposto
+populacao <- c(1, 2, 4, 4, 7, 7, 7, 8)
+tamanho_amostra <- 4
+limite_proporcao <- 4
+
+cat("EXECUTANDO ANÁLISE COM DADOS DO EXERCÍCIO:\n")
+cat(sprintf("População: %s\n", paste(populacao, collapse = ", ")))
+cat(sprintf("Tamanho da amostra: %d\n", tamanho_amostra))
+cat(sprintf("Limite para proporção: %d\n", limite_proporcao))
+cat(sprintf("Número esperado de combinações: %d\n", choose(8, 4)))
+cat("\n")
+
+# Executar análise completa
+resultado <- executar_analise_completa(
+  valores = populacao,
+  n = tamanho_amostra,
+  limite = limite_proporcao,
+  max_combinacoes = 10000
+)
+
+# Exibir resultados para fins didáticos
+if (resultado$sucesso) {
+  cat(sprintf("\nRESUMO DOS RESULTADOS:\n"))
+  cat(sprintf("- Método utilizado: %s\n", resultado$metadados$metodo))
+  cat(sprintf("- Amostras analisadas: %d\n", nrow(resultado$dados)))
+  
+  cat("\nPRIMEIRAS 5 LINHAS DOS RESULTADOS:\n")
+  print(head(resultado$dados, 5))
+  
+  # Análise adicional para compreensão conceitual
+  cat("\nCOMPREENSÃO CONCEITUAL:\n")
+  cat("A distribuição das médias amostrais aproxima-se de uma distribuição\n")
+  cat("normal (Teorema do Limite Central), mesmo para amostras relativamente\n")
+  cat("pequenas, quando a população não é muito assimétrica.\n")
+  
+} else {
+  cat(sprintf("FALHA NA ANÁLISE: %s\n", resultado$erro))
+  cat("Esta falha demonstra a importância da validação em análises estatísticas.\n")
+}
+\end{lstlisting}
+
+\subsection{Aplicação Shiny para Ensino}
+\label{subsec:shiny-corrigido}
+
+\begin{lstlisting}[style=r-style, caption={Aplicação Shiny interativa para ensino de amostragem}]
+# APLICAÇÃO SHINY PARA ENSINO DE AMOSTRAGEM ESTATÍSTICA
+library(shiny)
+library(combinat)
+
+# UI ---------------------------------------------------------------------------
+ui <- fluidPage(
+  titlePanel("�� Laboratório de Amostragem Estatística"),
+  sidebarLayout(
+    sidebarPanel(
+      h4("Configuração da População"),
+      numericInput('N', 'Tamanho da população (N):', 8, min = 2, max = 50),
+      textInput('valores', 'Valores da população (separados por vírgula):', 
+                '1,2,4,4,7,7,7,8'),
+      
+      h4("Parâmetros da Amostra"),
+      numericInput('n', 'Tamanho da amostra (n):', 4, min = 1, max = 20),
+      numericInput('limite', 'Valor limite para proporção:', 4),
+      
+      h4("Configurações Avançadas"),
+      sliderInput('max_combinacoes', 'Máximo de combinações para análise:', 
+                  min = 100, max = 10000, value = 5000, step = 100),
+      
+      actionButton('gerar', '�� Executar Análise', class = "btn-primary"),
+      
+      # Painel educacional
+      conditionalPanel(
+        condition = "input.gerar > 0",
+        wellPanel(
+          h5("Conceitos Estatísticos:"),
+          tags$ul(
+            tags$li("Distribuição amostral da média"),
+            tags$li("Teorema do Limite Central"), 
+            tags$li("Variabilidade amostral"),
+            tags$li("Estimação de parâmetros")
+          )
+        )
+      )
+    ),
+    
+    mainPanel(
+      # Status e alertas
+      verbatimTextOutput('status'),
+      uiOutput('alertas'),
+      
+      # Resultados principais
+      h3("Resultados da Análise Amostral"),
+      tableOutput('tabela_resultados'),
+      
+      # Visualizações educacionais
+      h4("Distribuições Amostrais"),
+      fluidRow(
+        column(6, 
+               plotOutput('hist_medias'),
+               p("Distribuição das Médias Amostrais - Ilustra o Teorema do Limite Central")
+        ),
+        column(6, 
+               plotOutput('hist_proporcoes'),
+               p("Distribuição das Proporções - Mostra a variabilidade das estimativas")
+        )
+      ),
+      
+      # Estatísticas descritivas
+      h4("Estatísticas Descritivas"),
+      verbatimTextOutput('estatisticas_descritivas'),
+      
+      # Download para relatórios
+      downloadButton('download', '�� Exportar Resultados')
+    )
+  )
+)
+
+# SERVER -----------------------------------------------------------------------
+server <- function(input, output, session) {
+  
+  # Reactive values para estado da aplicação
+  valores_reactive <- reactiveVal()
+  resultados_reactive <- reactiveVal()
+  
+  # Atualizar valores da população
+  observe({
+    req(input$valores)
+    tryCatch({
+      valores <- as.numeric(unlist(strsplit(input$valores, ',')))
+      valores_reactive(valores)
+    }, error = function(e) {
+      showNotification("Erro ao processar valores da população", type = "error")
+    })
+  })
+  
+  # Executar análise quando o botão for pressionado
+  observeEvent(input$gerar, {
+    # Reiniciar outputs
+    output$alertas <- renderUI({})
+    output$estatisticas_descritivas <- renderText({""})
+    
+    tryCatch({
+      # Obter e validar dados
+      valores <- valores_reactive()
+      n <- input$n
+      limite <- input$limite
+      
+      # Executar análise com feedback visual
+      withProgress(message = 'Processando análise...', value = 0, {
+        incProgress(0.2, detail = "Validando parâmetros estatísticos")
+        
+        # Validar entradas
+        validacao <- validar_entradas(valores, n, limite)
+        if (!validacao$sucesso) {
+          stop(paste(validacao$erros, collapse = "; "))
+        }
+        
+        incProgress(0.4, detail = "Gerando amostras")
+        
+        # Gerar amostras
+        resultado_amostras <- gerar_amostras_inteligente(valores, n, input$max_combinacoes)
+        
+        incProgress(0.6, detail = "Calculando estatísticas")
+        
+        # Calcular estatísticas
+        estatisticas <- calcular_estatisticas(resultado_amostras$amostras, limite)
+        
+        # Preparar dados finais
+        dados_amostras <- as.data.frame(t(resultado_amostras$amostras))
+        colnames(dados_amostras) <- paste0("obs_", 1:ncol(resultado_amostras$amostras))
+        resultado_final <- cbind(dados_amostras, estatisticas)
+        
+        # Armazenar resultados
+        resultados_reactive(list(
+          sucesso = TRUE,
+          dados = resultado_final,
+          metadados = list(
+            metodo = resultado_amostras$metodo,
+            total_combinacoes = resultado_amostras$total_combinacoes,
+            amostras_geradas = resultado_amostras$amostras_geradas
+          ),
+          validacao = validacao
+        ))
+        
+        incProgress(0.8, detail = "Gerando visualizações")
+      })
+      
+      # Output de status educativo
+      output$status <- renderText({
+        resultado <- resultados_reactive()
+        if (resultado$sucesso) {
+          sprintf("✅ Análise concluída!\nMétodo: %s\nAmostras analisadas: %d\nCombinações possíveis: %d", 
+                  resultado$metadados$metodo,
+                  resultado$metadados$amostras_geradas,
+                  resultado$metadados$total_combinacoes)
+        }
+      })
+      
+      # Estatísticas descritivas educativas
+      output$estatisticas_descritivas <- renderText({
+        resultado <- resultados_reactive()
+        if (resultado$sucesso) {
+          dados <- resultado$dados
+          sprintf(
+            "ESTATÍSTICAS DAS DISTRIBUIÇÕES AMOSTRAIS:\n\nMÉDIAS:\n- Média: %.3f\n- Desvio Padrão: %.3f\n- Coef. Variação: %.3f\n\nPROPORÇÕES:\n- Média: %.3f\n- Desvio Padrão: %.3f",
+            mean(dados$media), sd(dados$media), sd(dados$media)/mean(dados$media),
+            mean(dados$proporcao), sd(dados$proporcao)
+          )
+        }
+      })
+      
+    }, error = function(e) {
+      output$status <- renderText(sprintf("❌ Erro na análise: %s", e$message))
+      resultados_reactive(NULL)
+    })
+  })
+  
+  # Tabela de resultados
+  output$tabela_resultados <- renderTable({
+    req(resultados_reactive())
+    if (resultados_reactive()$sucesso) {
+      head(resultados_reactive()$dados, 10)
+    }
+  }, striped = TRUE, hover = TRUE, caption = "Primeiras 10 amostras e suas estatísticas")
+  
+  # Histograma das médias com anotações educativas
+  output$hist_medias <- renderPlot({
+    req(resultados_reactive())
+    if (resultados_reactive()$sucesso) {
+      dados <- resultados_reactive()$dados
+      hist(dados$media, 
+           main = "Distribuição das Médias Amostrais",
+           xlab = "Média Amostral", 
+           ylab = "Frequência",
+           col = "lightblue",
+           breaks = 20)
+      abline(v = mean(dados$media), col = "red", lwd = 2)
+      legend("topright", legend = "Média das Médias", col = "red", lwd = 2)
+    }
+  })
+  
+  # Histograma das proporções
+  output$hist_proporcoes <- renderPlot({
+    req(resultados_reactive())
+    if (resultados_reactive()$sucesso) {
+      dados <- resultados_reactive()$dados
+      hist(dados$proporcao, 
+           main = "Distribuição das Proporções",
+           xlab = "Proporção", 
+           ylab = "Frequência",
+           col = "lightgreen",
+           breaks = 20)
+      abline(v = mean(dados$proporcao), col = "red", lwd = 2)
+      legend("topright", legend = "Média das Proporções", col = "red", lwd = 2)
+    }
+  })
+  
+  # Download dos resultados
+  output$download <- downloadHandler(
+    filename = function() {
+      paste("resultados_amostragem_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".csv", sep = "")
+    },
+    content = function(file) {
+      req(resultados_reactive())
+      if (resultados_reactive()$sucesso) {
+        write.csv(resultados_reactive()$dados, file, row.names = FALSE)
+      }
+    }
+  )
+}
+
+# EXECUTAR APLICAÇÃO -----------------------------------------------------------
+shinyApp(ui, server)
+\end{lstlisting}
+
+\section{Implementação Python para Análise Estatística}
+\label{sec:python}
+
+\begin{lstlisting}[style=python-style, caption={Implementação Python educativa para amostragem}]
+"""
+===============================================================================
+LABORATÓRIO DE AMOSTRAGEM ESTATÍSTICA - PYTHON
+Material didático para ensino de inferência estatística
+
+Conceitos abordados:
+- Distribuições amostrais
+- Teorema do Limite Central  
+- Validação estatística
+- Visualização de resultados
+===============================================================================
+"""
+
+import streamlit as st
+import pandas as pd
+import numpy as np
+import itertools
+from math import comb
+from datetime import datetime
+import traceback
+
+# CONFIGURAÇÃO DA PÁGINA ======================================================
+st.set_page_config(
+    page_title="Laboratório de Amostragem Estatística",
+    page_icon="��",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# FUNÇÕES DE VALIDAÇÃO ESTATÍSTICA ============================================
+
+def validar_entradas(valores: list, n: int, N: int, limite: float) -> dict:
+    """
+    Valida parâmetros estatísticos baseado em princípios de amostragem.
+    
+    Args:
+        valores: Lista de valores da população
+        n: Tamanho da amostra
+        N: Tamanho da população
+        limite: Valor limite para proporções
+        
+    Returns:
+        Dict com status e mensagens de erro/aviso
+    """
+    erros = []
+    avisos = []
+    
+    # Validações baseadas em teoria de amostragem
+    if not all(isinstance(x, (int, float)) for x in valores):
+        erros.append("Todos os valores devem ser numéricos")
+    
+    if any(pd.isna(x) for x in valores):
+        erros.append("Valores não podem conter NaN")
+    
+    if not isinstance(n, int) or n < 1:
+        erros.append("Tamanho da amostra deve ser inteiro positivo")
+    
+    # Princípio fundamental: n <= N
+    if n > len(valores):
+        erros.append(f"Tamanho da amostra (n={n}) maior que população (N={len(valores)})")
+    
+    if len(valores) != N:
+        avisos.append(f"Número de valores ({len(valores)}) diferente do N informado ({N})")
+    
+    # Alertas para boas práticas estatísticas
+    if len(valores) < 5:
+        avisos.append("População muito pequena para inferência estatística")
+    
+    if n < 30:
+        avisos.append("Amostra pequena - cuidado com estimativas")
+    
+    return {
+        'sucesso': len(erros) == 0,
+        'erros': erros,
+        'avisos': avisos
+    }
+
+# GERADOR DE AMOSTRAS COM ABORDAGEM EDUCATIVA =================================
+
+def gerar_amostras_inteligente(valores: list, n: int, max_combinacoes: int = 10000) -> dict:
+    """
+    Gera amostras usando diferentes estratégias baseadas no contexto educativo.
+    
+    Args:
+        valores: Lista de valores da população
+        n: Tamanho da amostra
+        max_combinacoes: Limite para cálculo exaustivo
+        
+    Returns:
+        Dict com amostras e metadados educativos
+    """
+    try:
+        total_combinacoes = comb(len(valores), n)
+        st.info(f"**Conceito:** Número de combinações possíveis: {total_combinacoes:,}")
+        
+        if total_combinacoes <= max_combinacoes and total_combinacoes > 0:
+            # Abordagem exaustiva para compreensão completa
+            st.success("**Método:** EXAUSTIVO - Analisando todas combinações possíveis")
+            combinacoes = list(itertools.combinations(valores, n))
+            metodo = "exaustivo"
+            amostras_geradas = total_combinacoes
+        else:
+            # Abordagem prática para grandes populações
+            amostras_geradas = min(max_combinacoes, 5000)
+            st.warning(f"**Método:** AMOSTRAGEM - {amostras_geradas} amostras (abordagem prática)")
+            
+            combinacoes = []
+            for _ in range(amostras_geradas):
+                amostra = np.random.choice(valores, size=n, replace=False)
+                combinacoes.append(tuple(amostra))
+            metodo = "amostragem"
+        
+        return {
+            'combinacoes': combinacoes,
+            'metodo': metodo,
+            'total_combinacoes': total_combinacoes,
+            'amostras_geradas': len(combinacoes)
+        }
+        
+    except Exception as e:
+        st.error(f"Erro na geração de amostras: {str(e)}")
+        raise
+
+# CÁLCULO DE ESTATÍSTICAS DESCRITIVAS =========================================
+
+def calcular_estatisticas(combinacoes: list, limite: float) -> pd.DataFrame:
+    """
+    Calcula estatísticas descritivas para análise das distribuições amostrais.
+    
+    Args:
+        combinacoes: Lista de tuplas com as amostras
+        limite: Valor limite para cálculo de proporção
+        
+    Returns:
+        DataFrame com estatísticas calculadas
+    """
+    try:
+        dados = []
+        
+        for i, amostra in enumerate(combinacoes):
+            # Medidas de tendência central
+            media = np.mean(amostra)
+            proporcao = np.mean([x > limite for x in amostra])
+            
+            # Medidas de dispersão
+            desvio_padrao = np.std(amostra, ddof=1)
+            
+            # Coletar dados para análise
+            registro = {
+                'amostra_id': i + 1,
+                'media': media,
+                'proporcao': proporcao,
+                'desvio_padrao': desvio_padrao
+            }
+            
+            # Incluir valores individuais para análise detalhada
+            for j, valor in enumerate(amostra):
+                registro[f'valor_{j+1}'] = valor
+            
+            dados.append(registro)
+        
+        return pd.DataFrame(dados)
+        
+    except Exception as e:
+        st.error(f"Erro no cálculo de estatísticas: {str(e)}")
+        raise
+
+# ANÁLISE EXPLORATÓRIA EDUCATIVA ==============================================
+
+def gerar_analise_exploratoria(dados: pd.DataFrame) -> None:
+    """
+    Gera análise exploratória com foco educativo.
+    
+    Args:
+        dados: DataFrame com estatísticas das amostras
+    """
+    st.write("### �� Análise Exploratória das Distribuições Amostrais")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("Média das Médias", f"{dados['media'].mean():.3f}")
+        st.metric("EP das Médias", f"{dados['media'].std():.3f}")
+        
+    with col2:
+        st.metric("Média das Proporções", f"{dados['proporcao'].mean():.3f}")
+        st.metric("EP das Proporções", f"{dados['proporcao'].std():.3f}")
+        
+    with col3:
+        st.metric("Variabilidade Médias", f"{dados['media'].std()/dados['media'].mean():.3f}")
+        st.metric("Amostras Analisadas", len(dados))
+    
+    # Insights educativos
+    st.info("""
+    **Insights Estatísticos:**
+    - A distribuição das médias amostrais aproxima-se da normalidade (TLC)
+    - O erro padrão mede a variabilidade das estimativas
+    - Proporções seguem distribuição binomial
+    """)
+
+# FUNÇÃO PRINCIPAL DE ANÁLISE =================================================
+
+def executar_analise_completa(valores: list, n: int, limite: float, 
+                            max_combinacoes: int = 10000) -> dict:
+    """
+    Orquestra toda a análise de amostragem com abordagem educativa.
+    
+    Args:
+        valores: Valores da população
+        n: Tamanho da amostra
+        limite: Limite para proporções
+        max_combinacoes: Limite para cálculo exaustivo
+        
+    Returns:
+        Dict com resultados completos
+    """
+    st.write("### �� Executando Análise de Amostragem...")
+    
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    try:
+        # 1. VALIDAÇÃO ESTATÍSTICA
+        status_text.text("Validando parâmetros estatísticos...")
+        progress_bar.progress(10)
+        
+        validacao = validar_entradas(valores, n, len(valores), limite)
+        
+        if not validacao['sucesso']:
+            st.error("## ❌ Erros de Validação Estatística:")
+            for erro in validacao['erros']:
+                st.error(f"- {erro}")
+            return {'sucesso': False, 'erros': validacao['erros']}
+        
+        # Alertas informativos
+        if validacao['avisos']:
+            st.warning("## ⚠️ Considerações Estatísticas:")
+            for aviso in validacao['avisos']:
+                st.warning(f"- {aviso}")
+        
+        # 2. GERAÇÃO DE AMOSTRAS
+        status_text.text("Gerando amostras...")
+        progress_bar.progress(40)
+        
+        resultado_amostras = gerar_amostras_inteligente(valores, n, max_combinacoes)
+        
+        # 3. CÁLCULO DE ESTATÍSTICAS
+        status_text.text("Calculando estatísticas...")
+        progress_bar.progress(70)
+        
+        estatisticas = calcular_estatisticas(
+            resultado_amostras['combinacoes'], 
+            limite
+        )
+        
+        # 4. ANÁLISE EXPLORATÓRIA
+        status_text.text("Realizando análise exploratória...")
+        progress_bar.progress(90)
+        
+        resultado_final = {
+            'sucesso': True,
+            'dados': estatisticas,
+            'metadados': {
+                'metodo': resultado_amostras['metodo'],
+                'total_combinacoes': resultado_amostras['total_combinacoes'],
+                'amostras_geradas': resultado_amostras['amostras_geradas'],
+                'populacao': valores,
+                'parametros': {'n': n, 'limite': limite},
+                'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            },
+            'validacao': validacao
+        }
+        
+        progress_bar.progress(100)
+        status_text.text("✅ Análise concluída!")
+        
+        return resultado_final
+        
+    except Exception as e:
+        st.error(f"## ❌ Erro na Análise: {str(e)}")
+        st.code(traceback.format_exc())
+        return {'sucesso': False, 'erro': str(e)}
+
+# INTERFACE PRINCIPAL =========================================================
+
+def main():
+    st.title("�� Laboratório de Amostragem Estatística")
+    st.markdown("""
+    ### Material Didático para Ensino de Inferência Estatística
+    
+    Este laboratório virtual permite explorar conceitos fundamentais de amostragem:
+    - **Distribuições amostrais**
+    - **Teorema do Limite Central** 
+    - **Variabilidade das estimativas**
+    - **Validação estatística**
+    """)
+    
+    # SIDEBAR - PARÂMETROS DA ANÁLISE
+    with st.sidebar:
+        st.header("⚙️ Configuração da Análise")
+        
+        # Parâmetros principais
+        N = st.number_input('Tamanho da população (N):', 
+                           min_value=2, max_value=100, value=8,
+                           help="Número total de elementos na população")
+        
+        valores_input = st.text_input('Valores da população (separados por vírgula):', 
+                                     '1,2,4,4,7,7,7,8',
+                                     help="Digite os valores numéricos separados por vírgula")
+        
+        n = st.number_input('Tamanho da amostra (n):', 
+                           min_value=1, max_value=20, value=4,
+                           help="Tamanho de cada amostra (deve ser ≤ N)")
+        
+        limite = st.number_input('Valor limite para proporção:', value=4.0,
+                               help="Valor limite para cálculo de proporções")
+        
+        max_combinacoes = st.slider('Máximo de combinações para análise:', 
+                                   min_value=100, max_value=10000, 
+                                   value=5000, step=100,
+                                   help="Limite para análise exaustiva vs amostragem")
+        
+        if st.button('�� Executar Análise', type='primary', use_container_width=True):
+            # Processar valores da população
+            try:
+                valores = [float(x.strip()) for x in valores_input.split(',')]
+                
+                if len(valores) != N:
+                    st.warning(f"⚠️ Número de valores ({len(valores)}) diferente do N informado ({N})")
+                
+                # Executar análise completa
+                resultado = executar_analise_completa(
+                    valores, n, limite, max_combinacoes
+                )
+                
+                st.session_state['resultado'] = resultado
+                
+            except ValueError as e:
+                st.error("❌ Erro: Certifique-se de que todos os valores são numéricos")
+            except Exception as e:
+                st.error(f"❌ Erro inesperado: {str(e)}")
+    
+    # ÁREA PRINCIPAL - RESULTADOS E ANÁLISE
+    if 'resultado' in st.session_state:
+        resultado = st.session_state['resultado']
+        
+        if resultado['sucesso']:
+            st.success(f"## ✅ Análise Concluída!")
+            
+            # Metadados da análise
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Método", resultado['metadados']['metodo'].upper())
+            with col2:
+                st.metric("Amostras Geradas", resultado['metadados']['amostras_geradas'])
+            with col3:
+                st.metric("Combinações Possíveis", resultado['metadados']['total_combinacoes'])
+            
+            # Tabela de resultados
+            st.subheader("�� Resultados Detalhados")
+            st.dataframe(resultado['dados'].head(10), use_container_width=True,
+                        caption="Primeiras 10 amostras com suas estatísticas")
+            
+            # Análise exploratória
+            gerar_analise_exploratoria(resultado['dados'])
+            
+            # Visualizações educativas
+            st.subheader("�� Visualizações das Distribuições Amostrais")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.bar_chart(resultado['dados']['media'])
+                st.caption("**Distribuição das Médias Amostrais** - Ilustra o Teorema do Limite Central")
+            
+            with col2:
+                st.bar_chart(resultado['dados']['proporcao'])
+                st.caption("**Distribuição das Proporções** - Mostra a variabilidade das estimativas")
+            
+            # Download para relatórios
+            st.subheader("�� Exportar Resultados")
+            csv = resultado['dados'].to_csv(index=False)
+            st.download_button(
+                label="Download CSV Completo",
+                data=csv,
+                file_name=f"resultados_amostragem_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                help="Baixe os resultados completos para análise offline"
+            )
+        
+        else:
+            st.error("## ❌ Análise Falhou")
+            if 'erros' in resultado:
+                for erro in resultado['erros']:
+                    st.error(f"- {erro}")
+
+if __name__ == "__main__":
+    main()
+\end{lstlisting}
+
+\section{Conclusão e Aplicações Didáticas}
+\label{sec:conclusao}
+
+\subsection{Síntese dos Conceitos Abordados}
+
+As implementações apresentadas incorporam os seguintes conceitos fundamentais de inferência estatística:
+
+\begin{itemize}
+\item \textbf{Distribuição Amostral}: Comportamento das estatísticas sobre todas as amostras possíveis
+\item \textbf{Teorema do Limite Central}: Fundamentação teórica para a normalidade das médias amostrais
+\item \textbf{Validação Estatística}: Verificação de pressupostos e condições para inferência
+\item \textbf{Eficiência Computacional}: Balanceamento entre exatidão e viabilidade prática
+\item \textbf{Visualização Educativa}: Representações gráficas para compreensão conceitual
+\end{itemize}
+
+\subsection{Aplicações em Contexto Educacional}
+
+Estas implementações podem ser utilizadas para:
+
+\begin{enumerate}
+\item \textbf{Aulas de Estatística Básica}: Demonstração prática de conceitos teóricos
+\item \textbf{Laboratórios de Inferência}: Experimentação com diferentes parâmetros populacionais
+\item \textbf{Validação de Pressupostos}: Verificação empírica de teoremas estatísticos
+\item \textbf{Desenvolvimento de Competências}: Integração de programação e estatística
+\end{enumerate}
+
+\subsection{Extensões e Adaptações}
+
+Para adaptar o material a diferentes contextos educacionais:
+
+\begin{itemize}
+\item \textbf{Nível Básico}: Focar nas visualizações e interpretação intuitiva
+\item \textbf{Nível Intermediário}: Explorar diferentes distribuições populacionais
+\item \textbf{Nível Avançado}: Implementar intervalos de confiança e testes de hipóteses
+\item \textbf{Pesquisa}: Estender para amostragem complexa e bootstrap
+\end{itemize}
+
+\section{Anotações das Aulas}
+\label{sec:anotacoes-aulas}
+
+\subsection{Aula 03 - Fundamentos de Amostragem Estatística}
+\label{subsec:aula03}
+
+As anotações da Aula 03 abordam conceitos fundamentais de amostragem estatística, incluindo distribuições amostrais, probabilidades de inclusão e estimadores. O material complementa os códigos apresentados nas seções anteriores, fornecendo a base teórica para as implementações práticas.
+
+\subsubsection{Principais Tópicos Abordados}
+\begin{itemize}
+\item \textbf{Probabilidades de Inclusão}: Conceitos de probabilidades de primeira e segunda ordem (\(\pi_k\) e \(\pi_{kl}\))
+\item \textbf{Estimadores}: Fundamentos dos estimadores de Horvitz-Thompson e suas propriedades
+\item \textbf{Variância Amostral}: Cálculos e propriedades da variância em amostragem
+\item \textbf{Distribuições Amostrais}: Comportamento das estatísticas amostrais e teorema do limite central
+\item \textbf{Planejamento Amostral}: Estratégias para seleção de amostras representativas
+\end{itemize}
+
+\subsubsection{Inclusão do Material Original}
+\includepdf[pages=-, scale=0.75, pagecommand={\thispagestyle{plain}}]{Anotacoes_da_aula_03.pdf}
+
+\subsection{Relação com as Implementações Práticas}
+\label{subsec:contextualizacao}
+
+As anotações teóricas da Aula 03 se relacionam diretamente com as implementações práticas apresentadas neste documento:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{p{0.3\linewidth} p{0.6\linewidth}}
+\toprule
+\textbf{Conceito Teórico} & \textbf{Implementação Prática} \\
+\midrule
+Probabilidades de Inclusão & Validação de entradas e verificação de consistência dos parâmetros \\
+Distribuições Amostrais & Geração de todas as amostras possíveis ou amostragem representativa \\
+Estimadores & Cálculo de médias, proporções e outras estatísticas descritivas \\
+Variância Amostral & Cálculo do desvio padrão e análise da precisão das estimativas \\
+Teorema do Limite Central & Análise da distribuição das médias amostrais \\
+\bottomrule
+\end{tabular}
+\caption{Relação entre teoria e prática nas implementações}
+\end{table}
+
+\subsection{Exercícios Complementares Baseados na Aula}
+\label{subsec:exercicios-aula}
+
+Com base nas anotações da Aula 03, os seguintes exercícios complementares são sugeridos para aprofundamento:
+
+\subsubsection{Exercício 1: Probabilidades de Inclusão}
+Calcular as probabilidades de inclusão de primeira e segunda ordem para diferentes tamanhos amostrais e analisar como essas probabilidades afetam a precisão das estimativas.
+
+\subsubsection{Exercício 2: Comparação de Estimadores}
+Implementar e comparar diferentes estimadores (Horvitz-Thompson, razão, regressão) para os mesmos dados populacionais, analisando viés e eficiência.
+
+\subsubsection{Exercício 3: Análise de Variância}
+Comparar a variância teórica prevista pelas fórmulas com a variância observada nas simulações de Monte Carlo.
+
+\subsubsection{Exercício 4: Tamanho Amostral Ótimo}
+Desenvolver um algoritmo para determinar o tamanho amostral que minimiza o erro amostral para diferentes orçamentos e precisões requeridas.
+
+\subsubsection{Exercício 5: Efeito do Plano Amostral}
+Analisar como diferentes planos amostrais (aleatório simples, estratificado, por conglomerados) afetam a variância das estimativas.
+
+\begin{lstlisting}[style=r-style, caption={Exemplo de cálculo de probabilidades de inclusão}]
+#' Cálculo de Probabilidades de Inclusão
+#' Baseado nos conceitos da Aula 03
+
+calcular_probabilidades_inclusao <- function(N, n) {
+  # Probabilidade de inclusão de primeira ordem
+  pi_k <- n/N
+  
+  # Probabilidade de inclusão de segunda ordem (k != l)
+  pi_kl <- (n * (n - 1)) / (N * (N - 1))
+  
+  # Matriz de probabilidades conjuntas
+  matriz_pi <- matrix(pi_kl, nrow = N, ncol = N)
+  diag(matriz_pi) <- pi_k
+  
+  return(list(
+    primeira_ordem = pi_k,
+    segunda_ordem = pi_kl,
+    matriz = matriz_pi
+  ))
+}
+
+# Exemplo para população de tamanho 8 e amostra de tamanho 4
+probabilidades <- calcular_probabilidades_inclusao(8, 4)
+
+cat("Probabilidade de primeira ordem:", probabilidades$primeira_ordem, "\n")
+cat("Probabilidade de segunda ordem:", probabilidades$segunda_ordem, "\n")
+\end{lstlisting}
+
+
+\end{document}

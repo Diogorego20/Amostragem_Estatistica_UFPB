@@ -1,0 +1,336 @@
+
+% !TeX program = pdflatex
+% Modelo ABNT/abnTeX2 para relatório técnico-científico
+\documentclass[
+   12pt,                 % tamanho da fonte
+   oneside,              % impressão em apenas um lado
+   a4paper,              % papel A4
+   brazil                % idioma principal
+]{abntex2}
+
+% ------------------------------------------------------
+% Pacotes essenciais
+% ------------------------------------------------------
+\usepackage{lmodern}            % fonte Latin Modern
+\usepackage[T1]{fontenc}        % codificação da fonte
+\usepackage[utf8]{inputenc}     % utf-8
+\usepackage{indentfirst}        % indenta primeiro parágrafo
+\usepackage{graphicx}           % figuras
+\usepackage{microtype}          % melhorias tipográficas
+\usepackage{amsmath,amssymb}    % matemática
+\usepackage{booktabs}           % tabelas profissionais
+\usepackage{multirow}           % tabelas
+\usepackage{siunitx}            % valores numéricos
+\usepackage{caption}            % legendas
+\usepackage{subcaption}         % subfiguras
+\usepackage{hyperref}           % links
+\usepackage{enumitem}           % listas customizadas
+\usepackage{longtable}          % tabelas longas
+\usepackage{float}              % controle de float
+\usepackage{setspace}           % espaçamento
+\usepackage{pdfpages}           % inserir PDFs
+\usepackage{url}                % URLs
+\usepackage{ragged2e}           % alinhamento
+\usepackage{geometry}           % margens
+
+% Margens padrão ABNT
+\geometry{
+  left=3cm,
+  right=2cm,
+  top=3cm,
+  bottom=2cm
+}
+
+% ------------------------------------------------------
+% Configuração de idioma e citações ABNT
+% ------------------------------------------------------
+\usepackage[brazil]{babel}
+\usepackage[alf]{abntex2cite} % estilo autor-data ABNT (alf). Para numérico, use [num]
+
+% ------------------------------------------------------
+% Metadados do documento
+% ------------------------------------------------------
+\titulo{Impacto da Redução de Preço no Restaurante Universitário da UFPB sobre a Qualidade Percebida}
+\autor{Diogo Rego}
+\instituicao{%
+Universidade Federal da Paraíba (UFPB)\\
+Centro de Ciências Exatas e da Natureza (CCEN)\\
+Departamento de Estatística
+}
+\local{João Pessoa -- PB}
+\data{\today}
+
+% ------------------------------------------------------
+% Configurações de PDF
+% ------------------------------------------------------
+\hypersetup{
+  pdftitle={Impacto da Redução de Preço no RU/UFPB sobre a Qualidade Percebida},
+  pdfauthor={Diogo Rego},
+  pdfsubject={Relatório técnico-científico},
+  pdfcreator={LaTeX com abnTeX2},
+  pdfkeywords={RU, UFPB, qualidade percebida, amostragem, Likert, regressão, qui-quadrado},
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+% ------------------------------------------------------
+% Início do documento
+% ------------------------------------------------------
+\begin{document}
+\selectlanguage{brazil}
+\frenchspacing             % retira espaço extra entre frases
+
+% Capa
+\imprimircapa
+
+% Folha de rosto
+\imprimirfolhaderosto*
+
+% Dedicatória (opcional)
+% \begin{dedicatoria}
+%     \vspace*{\fill}
+%     \centering
+%     \textit{Dedico este trabalho a ...}
+%     \vspace*{\fill}
+% \end{dedicatoria}
+
+% Agradecimentos (opcional)
+% \begin{agradecimentos}
+%     Texto dos agradecimentos.
+% \end{agradecimentos}
+
+% Resumo
+\begin{resumo}
+Este relatório investiga se a redução recente no preço do Restaurante Universitário (RU) da UFPB impactou a qualidade percebida dos alimentos pelos estudantes. Aplicou-se questionário com escala Likert (1--5) cobrindo dimensões como sabor, variedade, frescor, temperatura e higiene, além de questões sobre percepção antes e após a redução de preço.
+
+O plano amostral considerou estudantes usuários do RU, por amostragem aleatória simples ou estratificada por curso/turno. A análise compreende testes de associação (qui-quadrado), comparação de médias (ANOVA) e modelos de regressão para controle de confundidores (frequência de uso e perfil socioeconômico). Resultados e implicações práticas para gestão do RU são discutidos.
+
+\textbf{Palavras-chave}: Restaurante Universitário; Qualidade Percebida; Escala Likert; Amostragem; Regressão; Qui-quadrado.
+\end{resumo}
+
+% Lista de figuras e tabelas (opcionais)
+\listoffigures
+\listoftables
+
+% Sumário
+\tableofcontents
+
+% ------------------------------------------------------
+% Corpo do texto
+% ------------------------------------------------------
+\chapter{Introdução}
+\label{chap:introducao}
+\justifying
+Em \textit{data recente}, a UFPB adotou novo modelo de subsídio ao RU, com desconto significativo para estudantes de graduação e pós-graduação. Este trabalho busca inferir se tal redução de preço influenciou a \textit{qualidade percebida} das refeições oferecidas.
+
+A pergunta central é: \textbf{a redução no preço impactou a qualidade percebida dos alimentos?} Para tal, mensuramos dimensões de qualidade (sabor, variedade, frescor, temperatura e higiene), além de expectativas e \textit{antes vs. depois} da política de preço.
+
+% Exemplo de figura com a imagem da notícia (substitua o caminho)
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{}
+\begin{figure}
+        \centering
+        \includegraphics[width=0.7\linewidth]{}
+\begin{figure}
+            \centering
+            \includegraphics[width=0.7\linewidth]{}
+\begin{figure}
+                \centering
+                \includegraphics[width=0.9\linewidth]{ru1.jpeg}
+                \label{fig:placeholder}
+            \end{figure}
+            \label{fig:placeholder}
+        \end{figure}
+                \caption{https://g1.globo.com/pb/paraiba/noticia/2025/11/11/estudantes-de-graduacao-e-pos-passam-a-ter-desconto-de-60percent-no-restaurante-universitario-da-ufpb.ghtml}
+        \label{fig:placeholder}
+    \end{figure}
+    \label{fig:contexto_ru}
+\end{figure}
+
+\chapter{Objetivo e Hipóteses}
+\label{chap:objetivo}
+\section{Objetivo Geral}
+Inferir se a redução no preço do RU influencia a qualidade percebida dos alimentos.
+
+\section{Hipóteses}
+\begin{description}[leftmargin=1cm]
+  \item[H\textsubscript{0}] A redução de preço \textbf{não} influencia a qualidade percebida.
+  \item[H\textsubscript{1}] A redução de preço \textbf{influencia} a qualidade percebida.
+\end{description}
+
+\chapter{Variáveis e Instrumento}
+\label{chap:variaveis}
+\section{Variáveis}
+\begin{itemize}
+    \item \textbf{Independente}: indicador da redução de preço (\textit{antes} vs. \textit{depois}) ou fator binário (0/1).
+    \item \textbf{Dependente}: qualidade percebida (Likert 1--5) nas dimensões: sabor, variedade, frescor, temperatura, higiene.
+    \item \textbf{Controle}: frequência de uso do RU, perfil socioeconômico, expectativas anteriores, curso/turno.
+\end{itemize}
+
+\section{Estrutura do Questionário}
+\subsection*{Seção A -- Perfil do Respondente}
+Curso e nível (graduação/pós), frequência no RU (diária, semanal, ocasional), turno.
+
+\subsection*{Seção B -- Percepção da Qualidade (Likert 1--5)}
+Avaliação de \textit{sabor, variedade, temperatura, higiene}.
+
+\subsection*{Seção C -- Expectativas e Mudança}
+``A qualidade mudou após a redução do preço?'' (melhorou/manteve/piorou) e comparação \textit{antes vs. depois}.
+
+\chapter{Plano Amostral}
+
+\begin{figure} [H]
+            \centering
+            \includegraphics[width=0.7\linewidth]{}
+\begin{figure}
+                \centering
+                \includegraphics[width=0.7\linewidth]{}
+\begin{figure} 
+                    \centering
+                    \includegraphics[width=0.8\linewidth]{pre;o.jpeg}
+                                       \label{fig:placeholder}
+                \end{figure}
+                                \label{fig:placeholder}
+            \end{figure}
+            \label{fig:placeholder}
+        \end{figure}
+
+\label{chap:amostragem}
+\section{População e Amostragem}
+População-alvo: estudantes que utilizam o RU contemplados com os auxílio na condicao de integral, parcial a ser pago pelo acesso de acordo com a reportagem. Estratégias de amostragem:
+\begin{enumerate}[label=\alph*)]
+    \item \textbf{Aleatória simples}: seleção uniforme dentre usuários, envio de formulário de perguntas via e-mail dos estudantes contemplados com os auxílios integral, parcial.
+    \item \textbf{Estratificada}: por curso, centro, turno, ou frequência de uso, para garantir representatividade.
+\end{enumerate}
+
+\section{Tamanho da Amostra}
+Para estimar proporção (p.ex., proporção de estudantes que percebem melhora), pode-se usar:
+\begin{equation}
+    n \;=\; \frac{Z^2 \cdot p \cdot (1-p)}{e^2},
+    \label{eq:tam_amostra}
+\end{equation}
+onde $Z$ é o quantil da Normal padrão (\textit{ex.}, $Z=1{,}96$ para 95\%), $p$ a proporção esperada (\textit{ex.}, $p=0{,}5$ quando desconhecida), e $e$ o erro amostral desejado (\textit{ex.}, $e=0{,}05$).
+
+Quando o tamanho da população $N$ é conhecido e não muito grande, aplica-se a correção para população finita:
+\begin{equation}
+    n_{aj} \;=\; \frac{n}{1 + \frac{n-1}{N}}.
+\end{equation}
+
+\chapter{Procedimentos de Coleta e Ética}
+\label{chap:coleta}
+\begin{itemize}
+    \item Aplicação do formulário via plataforma online, via e-mail, ou cartazes espalhados na entrada do restaurante. 
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{form.png}
+    \caption{Formulário interativo disponível em}
+    
+\end{figure}
+    \item Consentimento livre e esclarecido; anonimização dos dados; aprovação em comitê, se aplicável.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{LPD.jpeg}
+    \caption{Respeitando a LPD}
+    
+\end{figure}
+    
+
+
+\chapter{Plano de Análise Estatística}
+\label{chap:analise}
+\section{Preparação}
+\begin{itemize}
+    \item Limpeza de dados (valores faltantes, consistência de respostas).
+    \item Construção de escores de qualidade (média/mediana das dimensões).
+\end{itemize}
+
+\section{Testes}
+\begin{enumerate}[label=\alph*)]
+    \item \textbf{Qui-quadrado de independência}: associação entre ``mudança percebida'' (melhorou/manteve/piorou) e período (antes/depois).
+    \item \textbf{ANOVA / t-test}: comparação de médias de escores de qualidade \textit{antes vs. depois}. Para Likert agregado, considere ANOVA robusta ou testes não-paramétricos (Mann-Whitney).
+    \item \textbf{Regressão}: modelos lineares ou ordenados (logit/probit ordenado) com controles: frequência de uso, perfil socioeconômico, curso/turno.
+\end{enumerate}
+
+\section{Relato dos Resultados}
+Apresente estimativas pontuais, intervalos de confiança, valores-$p$ e tamanhos de efeito (Cohen's $d$, $\eta^2$). Discuta relevância prática, não apenas significância estatística.
+
+\chapter{Resultados (Modelo de Apresentação)}
+\label{chap:resultados}
+\section{Descritivos}
+\begin{table}[H]
+\centering
+\caption{Distribuição das respostas por dimensão de qualidade (Likert 1--5).}
+\label{tab:likert}
+\begin{tabular}{lcccccc}
+\toprule
+Dimensão & 1 & 2 & 3 & 4 & 5 & Média \\
+\midrule
+Sabor        & 5\% & 10\% & 25\% & 35\% & 25\% & 3{,}65 \\
+Variedade    & 8\% & 15\% & 30\% & 30\% & 17\% & 3{,}33 \\
+Temperatura  & 6\% & 12\% & 28\% & 32\% & 22\% & 3{,}52 \\
+Higiene      & 4\% & 9\%  & 26\% & 34\% & 27\% & 3{,}71 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Qui-quadrado}
+\begin{table}[H]
+\centering
+\caption{Cruzamento: mudança percebida vs. período (antes/depois).}
+\label{tab:chi}
+\begin{tabular}{lccc}
+\toprule
+                & Melhorou & Manteve & Piorou \\
+\midrule
+Antes           & 80       & 120     & 50     \\
+Depois          & 150      & 100     & 30     \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+Estatística $\chi^2 = 12{,}45$, $gl=2$, $p=0{,}002$ (exemplo). % Substitua pelos seus resultados
+\end{table}
+
+\section{ANOVA / Regressão}
+Inclua aqui tabelas de resultados (coeficientes, ICs, $p$) e gráficos de efeitos.
+
+\chapter{Discussão}
+\label{chap:discussao}
+Interprete os achados, discuta potenciais vieses (ex.: seleção, memória), limitações da escala Likert e considerações sobre causalidade. Contextualize com a mudança de subsídio no RU.
+
+\chapter{Conclusões e Recomendações}
+\label{chap:conclusoes}
+Resumo das evidências, implicações para gestão do RU (cardápio, logística, comunicação) e sugestões para monitoramento contínuo.
+
+\chapter{Referências}
+\bibliography{referencias}
+
+\appendix
+\chapter{Instrumento de Coleta (Questionário)}`
+
+
+Inclua versão final do questionário (PDF ou tabelado). Pode-se anexar um PDF com \texttt{\\includepdf}.
+
+\chapter{Código de Análise (R/Python)}
+Liste aqui os scripts principais (ou inclua como arquivo externo).
+
+% Exemplo de inclusão de código simples (texto)
+\section*{Exemplo de cálculo de tamanho de amostra}
+O cálculo da Equação~\ref{eq:tam_amostra} pode ser reproduzido em R/Python:
+\begin{verbatim}
+# R
+Z <- 1.96; p <- 0.5; e <- 0.05
+n <- (Z^2 * p * (1 - p)) / (e^2)
+
+# Python
+Z = 1.96; p = 0.5; e = 0.05
+n = (Z**2 * p * (1 - p)) / (e**2)
+\end{verbatim}
+
+\end{document}

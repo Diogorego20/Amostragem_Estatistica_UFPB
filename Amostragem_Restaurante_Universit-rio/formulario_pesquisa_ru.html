@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pesquisa sobre qualidade percebida do RU/UFPB">
+    <title>Pesquisa RU/UFPB - Qualidade Percebida</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .header-section h1 {
+            font-weight: 700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header-section .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        .stats-banner {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .sampling-info {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .sampling-info h3 {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .sampling-info p {
+            color: #555;
+            margin: 8px 0;
+            font-size: 1em;
+        }
+        
+        .consent-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .consent-box h3 {
+            color: #856404;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .consent-box p {
+            color: #856404;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 30px 0 20px 0;
+            font-weight: 600;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-icon {
+            font-size: 1.5em;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group:hover {
+            transform: translateX(5px);
+        }
+        
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 1em;
+        }
+        
+        .required {
+            color: #f5576c;
+            margin-left: 4px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .radio-option,
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+        }
+        
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .slider-container {
+            padding: 15px 0;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #e0e0e0 0%, #667eea 0%);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
+        .slider-value {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.5em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .quality-scale {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        .info-card {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .info-card p {
+            margin: 0;
+            color: #1565c0;
+            font-weight: 500;
+        }
+        
+        .progress-indicator {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 18px 40px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: white;
+            width: 100%;
+            margin-top: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #667eea, transparent);
+            margin: 30px 0;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 0;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px 15px 0 0;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        
+        .modal-header.success {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        }
+        
+        .modal-header.error {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        
+        .modal-header.warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+        
+        .modal-body {
+            padding: 30px;
+            font-size: 1.1em;
+            text-align: center;
+            line-height: 1.8;
+        }
+        
+        .modal-footer {
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .btn-close {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-close:hover {
+            background: #764ba2;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .main-card {
+                padding: 25px 20px;
+            }
+            
+            .header-section h1 {
+                font-size: 1.8em;
+            }
+            
+            .stats-banner {
+                flex-direction: column;
+            }
+            
+            .stat-item {
+                min-width: 100%;
+            }
+            
+            .section-header {
+                font-size: 1.1em;
+                padding: 12px 20px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .main-card {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            
+            .header-section {
+                padding: 20px 15px;
+            }
+            
+            .header-section h1 {
+                font-size: 1.5em;
+            }
+            
+            .header-section .subtitle {
+                font-size: 0.9em;
+            }
+            
+            .stat-number {
+                font-size: 2em;
+            }
+            
+            .btn-submit {
+                padding: 15px 30px;
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-card">
+            <!-- Cabeçalho -->
+            <div class="header-section">
+                <h1>🍽️ Pesquisa RU/UFPB</h1>
+                <div class="subtitle">Qualidade Percebida • Anônima • ~3 min • LGPD</div>
+            </div>
+            
+            <!-- Banner Estatístico -->
+            <div class="stats-banner">
+                <div class="stat-item">
+                    <span class="stat-number">📊</span>
+                    <span class="stat-label">Amostragem Científica</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">🎯</span>
+                    <span class="stat-label">Inferência Estatística</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">✨</span>
+                    <span class="stat-label">Sua Opinião Importa!</span>
+                </div>
+            </div>
+            
+            <!-- Informação sobre Amostragem -->
+            <div class="sampling-info">
+                <h3>🔬 Por que sua participação é importante?</h3>
+                <p>Cada resposta contribui para uma amostra representativa da comunidade UFPB!</p>
+                <p>Com técnicas de inferência estatística, sua opinião ajuda a melhorar o RU para todos.</p>
+            </div>
+            
+            <!-- Formulário -->
+            <form id="pesquisaForm">
+                <!-- Termo de Consentimento -->
+                <div class="consent-box">
+                    <h3>📋 Termo de Consentimento (LGPD)</h3>
+                    <p>
+                        <strong>Finalidade:</strong> pesquisa acadêmica sobre qualidade percebida do RU/UFPB. 
+                        <strong>Dados:</strong> respostas ao questionário (anônimas e agregadas). 
+                        <strong>Base legal:</strong> consentimento livre e informado. 
+                        <strong>Armazenamento:</strong> uso exclusivamente acadêmico e anonimizado. 
+                        <strong>Contato:</strong> você pode fornecer e-mail institucional opcional para receber o relatório.
+                    </p>
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" id="concordo" name="concordo" required>
+                            <span><strong>✅ Li e concordo com o tratamento dos dados conforme descrito acima.</strong></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Seção A - Perfil -->
+                <div class="section-header">
+                    <span class="section-icon">👤</span>
+                    Seção A — Perfil do Respondente
+                </div>
+                
+                <div class="form-group">
+                    <label for="curso_nivel">🎓 Curso e nível <span class="required">*</span></label>
+                    <select id="curso_nivel" name="curso_nivel" required>
+                        <option value="">Selecione...</option>
+                        <option value="Graduação">Graduação</option>
+                        <option value="Pós-graduação">Pós-graduação</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="turno">🕐 Turno predominante de estudo <span class="required">*</span></label>
+                    <select id="turno" name="turno" required>
+                        <option value="">Selecione...</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="frequencia">📅 Com que frequência você utiliza o RU? <span class="required">*</span></label>
+                    <select id="frequencia" name="frequencia" required>
+                        <option value="">Selecione...</option>
+                        <option value="Diária">Diária</option>
+                        <option value="3–4 vezes/semana">3–4 vezes/semana</option>
+                        <option value="1–2 vezes/semana">1–2 vezes/semana</option>
+                        <option value="Ocasional">Ocasional</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>🔄 Você utilizava o RU antes da redução de preço? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="usava_antes" value="Sim" required>
+                            <span>Sim</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="usava_antes" value="Não">
+                            <span>Não</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="renda">💰 Faixa de renda familiar (opcional)</label>
+                    <select id="renda" name="renda">
+                        <option value="">Selecione...</option>
+                        <option value="Até 1 SM">Até 1 SM</option>
+                        <option value="1–3 SM">1–3 SM</option>
+                        <option value="Mais de 3 SM">Mais de 3 SM</option>
+                        <option value="Prefiro não informar">Prefiro não informar</option>
+                    </select>
+                </div>
+                
+                <hr>
+                
+                <!-- Seção B - Qualidade -->
+                <div class="section-header">
+                    <span class="section-icon">⭐</span>
+                    Seção B — Avaliação de Qualidade (escala 1–5)
+                </div>
+                
+                <div class="info-card">
+                    <p>📌 Avalie cada aspecto da qualidade do RU usando a escala de 1 (muito ruim) a 5 (excelente)</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sabor">🍲 Sabor da comida</label>
+                    <div class="slider-container">
+                        <div class="slider-value" id="sabor_value">3</div>
+                        <input type="range" id="sabor" name="sabor" min="1" max="5" value="3" step="1">
+                        <div class="quality-scale">
+                            <span>1 = Muito ruim</span>
+                            <span>3 = Regular</span>
+                            <span>5 = Excelente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="variedade">🥗 Variedade do cardápio</label>
+                    <div class="slider-container">
+                        <div class="slider-value" id="variedade_value">3</div>
+                        <input type="range" id="variedade" name="variedade" min="1" max="5" value="3" step="1">
+                        <div class="quality-scale">
+                            <span>1 = Muito ruim</span>
+                            <span>3 = Regular</span>
+                            <span>5 = Excelente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="temperatura">🌡️ Temperatura adequada</label>
+                    <div class="slider-container">
+                        <div class="slider-value" id="temperatura_value">3</div>
+                        <input type="range" id="temperatura" name="temperatura" min="1" max="5" value="3" step="1">
+                        <div class="quality-scale">
+                            <span>1 = Muito ruim</span>
+                            <span>3 = Regular</span>
+                            <span>5 = Excelente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="higiene">🧼 Higiene e limpeza</label>
+                    <div class="slider-container">
+                        <div class="slider-value" id="higiene_value">3</div>
+                        <input type="range" id="higiene" name="higiene" min="1" max="5" value="3" step="1">
+                        <div class="quality-scale">
+                            <span>1 = Muito ruim</span>
+                            <span>3 = Regular</span>
+                            <span>5 = Excelente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="frescor">🥬 Frescor dos ingredientes</label>
+                    <div class="slider-container">
+                        <div class="slider-value" id="frescor_value">3</div>
+                        <input type="range" id="frescor" name="frescor" min="1" max="5" value="3" step="1">
+                        <div class="quality-scale">
+                            <span>1 = Muito ruim</span>
+                            <span>3 = Regular</span>
+                            <span>5 = Excelente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Seção C - Antes vs Depois -->
+                <div class="section-header">
+                    <span class="section-icon">📊</span>
+                    Seção C — Comparação: Antes vs. Depois da Redução
+                </div>
+                
+                <div class="form-group">
+                    <label for="qualidade_antes">📉 Qualidade geral (ANTES da redução de preço)</label>
+                    <div class="slider-container">
+                        <div class="slider-value" id="qualidade_antes_value">3</div>
+                        <input type="range" id="qualidade_antes" name="qualidade_antes" min="1" max="5" value="3" step="1">
+                        <div class="quality-scale">
+                            <span>1 = Muito ruim</span>
+                            <span>3 = Regular</span>
+                            <span>5 = Excelente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="qualidade_depois">📈 Qualidade geral (DEPOIS da redução de preço)</label>
+                    <div class="slider-container">
+                        <div class="slider-value" id="qualidade_depois_value">3</div>
+                        <input type="range" id="qualidade_depois" name="qualidade_depois" min="1" max="5" value="3" step="1">
+                        <div class="quality-scale">
+                            <span>1 = Muito ruim</span>
+                            <span>3 = Regular</span>
+                            <span>5 = Excelente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mudanca">🔄 Como você percebe a mudança na qualidade? <span class="required">*</span></label>
+                    <select id="mudanca" name="mudanca" required>
+                        <option value="">Selecione...</option>
+                        <option value="Melhorou">Melhorou</option>
+                        <option value="Manteve-se igual">Manteve-se igual</option>
+                        <option value="Piorou">Piorou</option>
+                    </select>
+                </div>
+                
+                <hr>
+                
+                <!-- Seção D - Expectativas -->
+                <div class="section-header">
+                    <span class="section-icon">💭</span>
+                    Seção D — Expectativas e Sugestões
+                </div>
+                
+                <div class="form-group">
+                    <label>🤔 Você esperava que a qualidade diminuísse após a redução de preço? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="esperava_diminuir" value="Sim" required>
+                            <span>Sim</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="esperava_diminuir" value="Não">
+                            <span>Não</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expectativa_atendida">✅ Sua expectativa foi atendida? <span class="required">*</span></label>
+                    <select id="expectativa_atendida" name="expectativa_atendida" required>
+                        <option value="">Selecione...</option>
+                        <option value="Melhor do que esperava">Melhor do que esperava</option>
+                        <option value="Igual ao esperado">Igual ao esperado</option>
+                        <option value="Pior do que esperava">Pior do que esperava</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="importante_qualidade">💡 O que você considera MAIS importante para a qualidade do RU? (opcional)</label>
+                    <textarea id="importante_qualidade" name="importante_qualidade" placeholder="Ex: sabor, variedade, atendimento, ambiente..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sugestoes">✍️ Sugestões para melhoria do RU (opcional)</label>
+                    <textarea id="sugestoes" name="sugestoes" placeholder="Compartilhe suas ideias para tornar o RU ainda melhor!"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">📧 E-mail institucional (opcional, para receber o relatório final)</label>
+                    <input type="email" id="email" name="email" placeholder="seu.email@academico.ufpb.br">
+                </div>
+                
+                <hr>
+                
+                <div class="progress-indicator">
+                    🎉 Você está quase lá! Clique em enviar para contribuir com a pesquisa!
+                </div>
+                
+                <button type="submit" class="btn-submit">📤 Enviar Respostas</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div id="modalHeader" class="modal-header"></div>
+            <div id="modalBody" class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Atualizar valores dos sliders em tempo real
+        const sliders = ['sabor', 'variedade', 'temperatura', 'higiene', 'frescor', 'qualidade_antes', 'qualidade_depois'];
+        
+        sliders.forEach(sliderId => {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(sliderId + '_value');
+            
+            slider.addEventListener('input', function() {
+                valueDisplay.textContent = this.value;
+                // Atualizar gradiente do slider
+                const percentage = ((this.value - this.min) / (this.max - this.min)) * 100;
+                this.style.background = `linear-gradient(to right, #667eea 0%, #667eea ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+            });
+            
+            // Inicializar gradiente
+            const percentage = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+            slider.style.background = `linear-gradient(to right, #667eea 0%, #667eea ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`;
+        });
+        
+        // Função para mostrar modal
+        function showModal(type, title, message) {
+            const modal = document.getElementById('modal');
+            const modalHeader = document.getElementById('modalHeader');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalHeader.className = 'modal-header ' + type;
+            modalHeader.innerHTML = title;
+            modalBody.innerHTML = message;
+            
+            modal.style.display = 'block';
+        }
+        
+        // Função para fechar modal
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Função para formatar data/hora
+        function getTimestamp() {
+            const now = new Date();
+            return now.toISOString().replace('T', ' ').substring(0, 19);
+        }
+        
+        // Função para baixar CSV
+        function downloadCSV(data, filename) {
+            const csvContent = data.map(row => row.join(',')).join('\n');
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Processar envio do formulário
+        document.getElementById('pesquisaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validar consentimento
+            if (!document.getElementById('concordo').checked) {
+                showModal('error', '⚠️ Atenção!', 
+                    '<p>Para participar da pesquisa, você precisa concordar com o termo de consentimento (LGPD).</p>' +
+                    '<p style="color: #666; font-size: 0.95em;">Seus dados serão tratados de forma anônima e exclusivamente para fins acadêmicos.</p>');
+                return;
+            }
+            
+            // Coletar dados do formulário
+            const formData = new FormData(this);
+            const data = {
+                timestamp: getTimestamp(),
+                curso_nivel: formData.get('curso_nivel'),
+                turno: formData.get('turno'),
+                frequencia: formData.get('frequencia'),
+                usava_antes: formData.get('usava_antes'),
+                renda: formData.get('renda') || '',
+                sabor: formData.get('sabor'),
+                variedade: formData.get('variedade'),
+                temperatura: formData.get('temperatura'),
+                higiene: formData.get('higiene'),
+                frescor: formData.get('frescor'),
+                qualidade_antes: formData.get('qualidade_antes'),
+                qualidade_depois: formData.get('qualidade_depois'),
+                mudanca: formData.get('mudanca'),
+                esperava_diminuir: formData.get('esperava_diminuir'),
+                expectativa_atendida: formData.get('expectativa_atendida'),
+                importante_qualidade: formData.get('importante_qualidade') || '',
+                sugestoes: formData.get('sugestoes') || '',
+                email: formData.get('email') || ''
+            };
+            
+            // Salvar no localStorage
+            let respostas = JSON.parse(localStorage.getItem('respostas_ru') || '[]');
+            respostas.push(data);
+            localStorage.setItem('respostas_ru', JSON.stringify(respostas));
+            
+            // Preparar dados para CSV
+            const headers = Object.keys(data);
+            const values = Object.values(data);
+            
+            // Verificar se já existe arquivo anterior
+            let csvData = [];
+            const existingData = localStorage.getItem('csv_respostas_ru');
+            
+            if (!existingData) {
+                // Primeira resposta - adicionar cabeçalho
+                csvData.push(headers);
+            }
+            csvData.push(values);
+            
+            // Salvar CSV acumulado
+            const allResponses = JSON.parse(localStorage.getItem('respostas_ru') || '[]');
+            const fullCSV = [headers];
+            allResponses.forEach(resp => {
+                fullCSV.push(Object.values(resp));
+            });
+            localStorage.setItem('csv_respostas_ru', JSON.stringify(fullCSV));
+            
+            // Fazer download automático do CSV
+            downloadCSV(fullCSV, 'respostas_ru_ufpb.csv');
+            
+            // Mostrar mensagem de sucesso
+            showModal('success', '🎉 Obrigado pela Participação!',
+                '<p style="font-weight: 600;">Sua resposta foi registrada com sucesso!</p>' +
+                '<p>Sua contribuição é fundamental para melhorar a qualidade do RU/UFPB.</p>' +
+                '<p style="color: #666; font-size: 0.95em;">Os resultados da pesquisa serão analisados com técnicas de inferência estatística.</p>' +
+                '<br>' +
+                '<p style="color: #667eea; font-weight: 600;">📊 Juntos, fazemos a diferença!</p>' +
+                '<br>' +
+                '<p style="font-size: 0.9em; color: #888;">💾 O arquivo CSV com sua resposta foi baixado automaticamente.</p>');
+            
+            // Resetar formulário
+            this.reset();
+            
+            // Resetar valores dos sliders
+            sliders.forEach(sliderId => {
+                document.getElementById(sliderId).value = 3;
+                document.getElementById(sliderId + '_value').textContent = 3;
+                const slider = document.getElementById(sliderId);
+                slider.style.background = 'linear-gradient(to right, #667eea 0%, #667eea 50%, #e0e0e0 50%, #e0e0e0 100%)';
+            });
+        });
+        
+        // Função para exportar todas as respostas (para uso administrativo)
+        function exportarTodasRespostas() {
+            const allResponses = JSON.parse(localStorage.getItem('respostas_ru') || '[]');
+            
+            if (allResponses.length === 0) {
+                alert('Nenhuma resposta para exportar.');
+                return;
+            }
+            
+            const headers = Object.keys(allResponses[0]);
+            const csvData = [headers];
+            
+            allResponses.forEach(resp => {
+                csvData.push(Object.values(resp));
+            });
+            
+            downloadCSV(csvData, 'todas_respostas_ru_ufpb.csv');
+            
+            alert(`${allResponses.length} resposta(s) exportada(s) com sucesso!`);
+        }
+        
+        // Adicionar atalho de teclado para exportar (Ctrl+Shift+E)
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'E') {
+                e.preventDefault();
+                exportarTodasRespostas();
+            }
+        });
+        
+        console.log('📊 Formulário de Pesquisa RU/UFPB carregado com sucesso!');
+        console.log('💡 Dica: Use Ctrl+Shift+E para exportar todas as respostas armazenadas localmente.');
+    </script>
+</body>
+</html>

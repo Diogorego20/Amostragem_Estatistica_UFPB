@@ -1,0 +1,488 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
+
+% Configurações de página
+\geometry{a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% Configurações de cabeçalho e rodapé
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize Manual Profissional – ETL Integrador (R)}
+\fancyhead[R]{\footnotesize Agricultura Familiar PB}
+\fancyfoot[C]{\footnotesize Página \thepage\ de \pageref{LastPage}}
+
+% Configurações de código R
+\lstset{
+    language=R,
+    basicstyle=\footnotesize\ttfamily,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    rulecolor=\color{black},
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green},
+    stringstyle=\color{red},
+    otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/,@,^}
+}
+
+% Formatação de seções
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% Capa
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge\bfseries ETL Integrador \\[0.5cm]
+    \Large Agricultura Familiar PB (R)\par}
+    \vspace{1cm}
+    {\Large Linguagem: R\par}
+    \vspace{2cm}
+    {\Large Aluno Diogo da Silva Rego Versão 1.0 · 11/11/2025\par}
+    \vfill
+    \begin{tabular}{p{8cm}}
+        \hline
+        \textbf{Documento Técnico} \\
+        Processamento de Dados · Integração · Controle de Qualidade \\
+        \hline
+    \end{tabular}
+    \vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Objetivo e Escopo}
+
+Este documento fornece um script em R para integrar fontes (EMPAER/CAF) com agregados do IBGE/SIDRA, aplicando controle de qualidade, deduplicação e geração de relatório de QC (Markdown). A configuração fica externa via YAML para facilitar reuso e reprodutibilidade.
+
+\section{Pré-requisitos}
+
+\begin{itemize}
+    \item \textbf{R 4.2+}
+    \item \textbf{Pacotes necessários:}
+    \begin{itemize}
+        \item yaml
+        \item readr
+        \item dplyr
+        \item stringr
+        \item jsonlite
+        \item httr
+        \item opcional: sidra
+    \end{itemize}
+\end{itemize}
+
+\section{Estrutura de Projeto}
+
+\begin{verbatim}
+seu_projeto/
+├── config.yaml
+├── etl/
+│   ├── etl_integrador.py
+│   └── etl_integrador.R
+├── dados/
+│   ├── raw/          # CSVs (empaer_*.csv, caf_*.csv)
+│   └── processed/    # saídas integradas
+├── docs/
+├── qc_reports/       # relatórios QC (Markdown)
+└── logs/             # registros da execução
+\end{verbatim}
+
+\section{Configuração (config.yaml)}
+
+\begin{lstlisting}[language=YAML,caption=Arquivo de configuração config.yaml]
+geral:
+  uf_sigla: "PB"
+  uf_ibge: 25
+  charset: "utf-8"
+
+ibge_sidra:
+  usar_sidrapy: true
+  tabela: 6956
+  variaveis: "all"
+  periodo: "2017"
+  territorial_level: "n6"
+  filtro_uf: 25
+
+arquivos_locais:
+  padrao_empaer: "dados/raw/empaer_*.csv"
+  padrao_caf: "dados/raw/caf_*.csv"
+
+integracao:
+  chaves_primarias:
+    - "cpf"
+  padrao_municipio:
+    preferencia:
+      - "municipio_ibge"
+      - "cod_municipio_ibge"
+      - "codmun"
+    normalizar_municipio: true
+  gerar_id_unico: true
+
+qualidade:
+  campos_obrigatorios:
+    - "fonte"
+    - "municipio_ibge"
+  limites:
+    municipio_ibge_digitos: 7
+  duplicatas_por:
+    - "id_unico"
+    - "municipio_ibge"
+
+saidas:
+  frame_integrado: "dados/processed/frame_integrado.csv"
+  qc_markdown: "docs/qc_reports/qc_frame_integrado.md"
+  log_arquivo: "docs/logs/etl.log"
+\end{lstlisting}
+
+\section{Execução}
+
+\begin{verbatim}
+$ Rscript etl/etl_integrador.R --config config.yaml
+\end{verbatim}
+
+\section{Controle de Qualidade}
+
+O pipeline gera:
+\begin{itemize}
+    \item \texttt{frame\_integrado.csv} - Dados integrados finais
+    \item \texttt{qc\_frame\_integrado.md} - Relatório de qualidade com:
+    \begin{itemize}
+        \item Ausência por coluna (top 20)
+        \item Duplicatas por chaves
+        \item Validação do código IBGE de município
+    \end{itemize}
+    \item Arquivo de logs com eventos, avisos e erros
+\end{itemize}
+
+\section{Boas Práticas (LGPD \& Reprodutibilidade)}
+
+\begin{itemize}
+    \item \textbf{LGPD:} Dados pessoais devem ser usados apenas para fins estatísticos; publicar apenas saídas anonimizadas.
+    \item \textbf{Reprodutibilidade:} Versionar o repositório, manter data lineage e scripts imutáveis por versão.
+    \item \textbf{Controle de Qualidade:} Validação automática de dados e geração de relatórios.
+    \item \textbf{Configuração Externa:} Parâmetros em YAML para facilitar manutenção.
+\end{itemize}
+
+\section{Fluxo de Processamento}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 0.5cm,
+    box/.style={rectangle, draw=black, thick, text width=4cm, minimum height=1cm, text centered},
+    arrow/.style={->, thick, >=stealth}
+]
+
+% Nodes
+\node[box] (empaer) {Dados EMPAER \\ (CSV/RAW)};
+\node[box, right=of empaer] (caf) {Dados CAF \\ (CSV/RAW)};
+\node[box, right=of caf] (ibge) {IBGE SIDRA \\ (API/REST)};
+
+\node[box, below=2cm of caf] (etl) {ETL Integrador (R)};
+
+\node[box, below left=1cm and 0.5cm of etl] (frame) {Frame Integrado \\ (CSV)};
+\node[box, below right=1cm and 0.5cm of etl] (qc) {Relatório de Qualidade \\ (Markdown)};
+
+% Arrows
+\draw[arrow] (empaer) -- (etl);
+\draw[arrow] (caf) -- (etl);
+\draw[arrow] (ibge) -- (etl);
+
+\draw[arrow] (etl) -| (frame);
+\draw[arrow] (etl) -| (qc);
+
+\end{tikzpicture}
+\caption{Diagrama do fluxo de processamento ETL em R}
+\label{fig:fluxo_etl_r}
+\end{figure}
+
+\section{Script Completo}
+
+\begin{lstlisting}[caption=ETL Integrador - etl\_integrador.R]
+#!/usr/bin/env Rscript
+# -*- coding: utf-8 -*-
+# ETL Integrador - Agricultura Familiar PB (R)
+# Autor: Diogo Rego (modelo)
+# Descrição:
+# - Integra EMPAER/CAF (CSVs locais) com agregados IBGE/SIDRA
+# - Qualidade: checagens, deduplicação e relatório QC (Markdown simples)
+# - Configuração por YAML
+
+suppressPackageStartupMessages({
+library(yaml)
+library(readr)
+library(dplyr)
+library(stringr)
+library(jsonlite)
+library(httr)
+})
+
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) < 2 || args[1] != "--config") {
+  stop("Uso: Rscript etl_integrador.R --config config.yaml")
+}
+cfg <- yaml::read_yaml(args[2])
+
+log_msg <- function(...) cat(format(Sys.time(), "%F %T"), "-", ..., "\n")
+
+dir.create(dirname(cfg$saidas$log_arquivo), recursive = TRUE, showWarnings = FALSE)
+sink(cfg$saidas$log_arquivo, append = TRUE, split = TRUE)
+
+normalize_names <- function(df) {
+  names(df) <- names(df) |>
+    stringr::str_trim() |>
+    stringr::str_to_lower() |>
+    stringr::str_replace_all("\\s+", "_")
+  df
+}
+
+sanitize_municipio <- function(df, prefer, digits=7) {
+  for (c in prefer) {
+    if (c %in% names(df)) {
+      df$municipio_ibge <- stringr::str_extract(df[[c]] |> as.character(), "\\d+")
+      break
+    }
+  }
+  if ("municipio_ibge" %in% names(df)) {
+    df$municipio_ibge <- stringr::str_pad(df$municipio_ibge, width = digits, pad = "0")
+  }
+  df
+}
+
+create_id_unico <- function(df, keys) {
+  if (!"id_unico" %in% names(df)) {
+    cand <- names(df)[names(df) %in% keys]
+    if (length(cand) > 0) {
+      k <- cand[1]
+      df$id_unico <- df[[k]] |> as.character() |> stringr::str_replace_all("\\D", "")
+    } else {
+      if (!requireNamespace("digest", quietly = TRUE)) {
+        install.packages("digest", repos = "https://cran.rstudio.com/")
+      }
+      df$id_unico <- sapply(seq_len(nrow(df)), function(i) digest::digest(paste(df[i,], collapse="|")))
+    }
+  }
+  df
+}
+
+read_first <- function(pattern) {
+  files <- Sys.glob(pattern)
+  if (length(files) == 0) {
+    log_msg("Nenhum arquivo para padrão:", pattern)
+    return(NULL)
+  }
+  log_msg("Lendo:", files[1])
+  readr::read_csv(files[1], show_col_types = FALSE, locale = locale(encoding = "UTF-8"))
+}
+
+sidra_rest_values <- function(table, variables, period, territorial_level) {
+  endpoint <- sprintf("/values/t/%s/%s/all/v/%s/p/%s", table, territorial_level, variables, period)
+  url <- paste0("https://apisidra.ibge.gov.br", endpoint)
+  log_msg("SIDRA REST GET:", url)
+  res <- httr::GET(url, timeout(120))
+  if (httr::http_error(res)) {
+    log_msg("Erro SIDRA:", httr::http_status(res)$message)
+    return(NULL)
+  }
+  txt <- httr::content(res, as = "text", encoding = "UTF-8")
+  jj <- jsonlite::fromJSON(txt, simplifyDataFrame = TRUE)
+  if (is.null(jj) || length(jj) == 0) return(NULL)
+  df <- as.data.frame(jj, stringsAsFactors = FALSE)
+  names(df) <- names(df) |>
+    stringr::str_replace_all("[^0-9A-Za-z_]+", "_") |>
+    stringr::str_to_lower() |>
+    stringr::str_trim("_")
+  rn <- c(m="medida", v="variavel", vd="valor",
+          d1c="dim_1_codigo", d1n="dim_1_nome",
+          d2c="dim_2_codigo", d2n="dim_2_nome",
+          nn="nivel_territorial", n="nivel_territorial_nome",
+          mc="unidade_medida", mn="unidade_medida_nome")
+  for (k in names(rn)) if (k %in% names(df)) names(df)[names(df) == k] <- rn[[k]]
+  if ("valor" %in% names(df)) df$valor <- suppressWarnings(as.numeric(df$valor))
+  df
+}
+
+sidra_via_pacote <- function(cfg) {
+  if (!requireNamespace("sidra", quietly = TRUE)) {
+    log_msg("Pacote 'sidra' não disponível; usando REST.")
+    return(NULL)
+  }
+  table <- cfg$ibge_sidra$tabela
+  period <- cfg$ibge_sidra$periodo
+  df <- tryCatch({
+    sidra::get_sidra(x = table, period = period)
+  }, error = function(e) { log_msg("Erro sidra::get_sidra:", e$message); NULL })
+  if (is.null(df)) return(NULL)
+  names(df) <- names(df) |>
+    stringr::str_replace_all("[^0-9A-Za-z_]+", "_") |>
+    stringr::str_to_lower()
+  df
+}
+
+log_msg("Iniciando ETL Integrador (R)")
+
+df_ibge <- NULL
+if (isTRUE(cfg$ibge_sidra$usar_sidrapy)) {
+  df_ibge <- sidra_via_pacote(cfg)
+}
+if (is.null(df_ibge)) {
+  df_ibge <- sidra_rest_values(cfg$ibge_sidra$tabela,
+                              cfg$ibge_sidra$variaveis,
+                              cfg$ibge_sidra$periodo,
+                              cfg$ibge_sidra$territorial_level)
+}
+if (!is.null(df_ibge) && !"municipio_ibge" %in% names(df_ibge)) {
+  cand <- c("dim_1_codigo", "cod_municipio", "municipio_codigo")
+  for (c in cand) {
+    if (c %in% names(df_ibge)) {
+      df_ibge$municipio_ibge <- stringr::str_extract(as.character(df_ibge[[c]]), "\\d+")
+      df_ibge$municipio_ibge <- stringr::str_pad(df_ibge$municipio_ibge, 7, pad = "0")
+      break
+    }
+  }
+}
+if (!is.null(df_ibge)) df_ibge$fonte <- "IBGE_SIDRA"
+
+df_empaer <- read_first(cfg$arquivos_locais$padrao_empaer)
+df_caf <- read_first(cfg$arquivos_locais$padrao_caf)
+
+if (!is.null(df_empaer)) {
+  df_empaer <- normalize_names(df_empaer)
+  df_empaer$fonte <- "EMPAER"
+  df_empaer <- sanitize_municipio(df_empaer, cfg$integracao$padrao_municipio$preferencia,
+                                 cfg$qualidade$limites$municipio_ibge_digitos)
+}
+if (!is.null(df_caf)) {
+  df_caf <- normalize_names(df_caf)
+  df_caf$fonte <- "CAF"
+  df_caf <- sanitize_municipio(df_caf, cfg$integracao$padrao_municipio$preferencia,
+                              cfg$qualidade$limites$municipio_ibge_digitos)
+}
+
+bases <- list(df_empaer, df_caf, df_ibge)
+bases <- bases[!sapply(bases, is.null)]
+if (length(bases) == 0) stop("Nenhuma base disponível. Verifique arquivos e config.")
+
+base <- dplyr::bind_rows(bases)
+
+if (isTRUE(cfg$integracao$gerar_id_unico)) {
+  if (!requireNamespace("digest", quietly = TRUE)) install.packages("digest", repos = "https://cran.rstudio.com/")
+  base <- create_id_unico(base, cfg$integracao$chaves_primarias)
+}
+if (isTRUE(cfg$integracao$normalizar_municipio)) {
+  base <- sanitize_municipio(base, cfg$integracao$padrao_municipio$preferencia,
+                            cfg$qualidade$limites$municipio_ibge_digitos)
+}
+
+obrig <- cfg$qualidade$campos_obrigatorios
+falt <- obrig[!obrig %in% names(base)]
+if (length(falt) > 0) log_msg("Atenção: faltam colunas obrigatórias:", paste(falt, collapse = ", "))
+
+dup_by <- cfg$qualidade$duplicatas_por[cfg$qualidade$duplicatas_por %in% names(base)]
+if (length(dup_by) > 0) {
+  antes <- nrow(base)
+  base <- base |> dplyr::distinct(across(all_of(dup_by)), .keep_all = TRUE)
+  log_msg(sprintf("Deduplicação por [%s]: %d -> %d", paste(dup_by, collapse = ", "), antes, nrow(base)))
+}
+
+dir.create(dirname(cfg$saidas$frame_integrado), recursive = TRUE, showWarnings = FALSE)
+readr::write_csv(base, cfg$saidas$frame_integrado)
+log_msg("Frame integrado salvo em:", cfg$saidas$frame_integrado)
+
+# QC simples
+miss <- sapply(base, function(x) mean(is.na(x)))
+miss <- sort(miss, decreasing = TRUE)
+
+dup_count <- if (length(dup_by) > 0) sum(duplicated(base[, dup_by, drop = FALSE])) else 0
+
+val_mun <- 0
+if ("municipio_ibge" %in% names(base)) {
+  inv <- base$municipio_ibge[!grepl("^\\d{7}$", base$municipio_ibge %>% as.character())]
+  val_mun <- length(inv)
+}
+
+dir.create(dirname(cfg$saidas$qc_markdown), recursive = TRUE, showWarnings = FALSE)
+qc_lines <- c(
+  "# Relatório de Qualidade – Frame Integrado",
+  sprintf("- Linhas: **%s**", format(nrow(base), big.mark=".", decimal.mark=",")),
+  sprintf("- Colunas: **%s**", ncol(base)),
+  "",
+  "## Ausência por coluna (top 20)",
+  paste0("|coluna|miss%|\n|---:|---:|\n",
+        paste0(head(names(miss), 20), "|", round(100*head(miss,20),2), "%", collapse = "\n")),
+  "",
+  "## Duplicatas",
+  sprintf("- Chaves: %s", if (length(dup_by)>0) paste(dup_by, collapse=", ") else "—"),
+  sprintf("- Registros duplicados: **%s**", format(dup_count, big.mark=".", decimal.mark=",")),
+  "",
+  "## Validação `municipio_ibge`",
+  sprintf("- Inválidos: **%s**", format(val_mun, big.mark=".", decimal.mark=","))
+)
+writeLines(qc_lines, con = cfg$saidas$qc_markdown)
+log_msg("QC salvo em:", cfg$saidas$qc_markdown)
+
+log_msg("ETL finalizado com sucesso.")
+\end{lstlisting}
+
+\section{Resumo das Funções Principais}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{6cm}p{8cm}}
+\toprule
+\textbf{Função} & \textbf{Descrição} \\
+\midrule
+\texttt{normalize\_names()} & Normaliza nomes das colunas para snake\_case \\
+\texttt{sanitize\_municipio()} & Padroniza código IBGE do município (7 dígitos) \\
+\texttt{create\_id\_unico()} & Cria identificador único para registros \\
+\texttt{read\_first()} & Carrega primeiro arquivo que corresponde ao padrão \\
+\texttt{sidra\_rest\_values()} & Obtém dados do IBGE via API REST \\
+\texttt{sidra\_via\_pacote()} & Obtém dados do IBGE via pacote sidra \\
+\texttt{log\_msg()} & Função auxiliar para logging formatado \\
+\bottomrule
+\end{tabular}
+\caption{Funções principais do ETL Integrador em R}
+\end{table}
+
+\section{Considerações Finais}
+
+\begin{itemize}
+    \item \textbf{Manutenibilidade:} Código modular e documentado para fácil manutenção
+    \item \textbf{Extensibilidade:} Estrutura permite adição de novas fontes de dados
+    \item \textbf{Robustez:} Tratamento de erros e logging abrangente
+    \item \textbf{Conformidade:} Respeito às diretrizes de proteção de dados
+    \item \textbf{Reprodutibilidade:} Configuração externa e versionamento
+    \item \textbf{Eficiência:} Uso de pacotes modernos do R (readr, dplyr) para performance
+\end{itemize}
+
+\end{document}
